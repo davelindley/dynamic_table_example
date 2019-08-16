@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Drop Downs Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
+</head>
+
+<body>
+<div id="app">
+
+    <h1>Currently Selected: {{selected_location}}</h1>
+
+    <select v-model="selected_location">
+        <option v-for="(types,name) in location_data" v-bind:selected="name">
+            {{name}}
+        </option>
+    </select>
+
+    <select>
+        <option v-for="type in location_data[selected_location]">
+            {{type}}
+        </option>
+    </select>
+
+    <h4>{{api_data}}</h4>
+</div>
+</body>
+
+<script>
+var app = new Vue({
+        el: '#app',
+        //In Vue 'data' is a function which returns an object which is available to the template
+        data() {
+            return {
+                //This the the hardcoded data
+                location_data: {
+                    'Tropicana Field': ['mlb', 'preseason', 'family', 'graduation'],
+                    'State Farm Arena': ['concert A', 'concert B', 'NBA', 'family', 'convention'],
+                    'Dodger Field': ['mlb', 'family', 'press', 'other'],
+                    'Nationals Park': ['mlb', 'other event', 'nats specific thing', 'hello world'],
+                },
+                //this could be a computed property if you want it to by dynamic.
+                selected_location:'Tropicana Field',
+                api_data:''
+            }
+        },
+
+    //When the Vue Object is mounted, make a call to an api and get some data assigned to a variable in the data
+    //Point this towards an endpoint on your django project which gives the appropriate location data
+        mounted(){
+                axios.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+                    .then(response => (this.api_data = response))
+
+        }
+    })
+</script>
+</html>
